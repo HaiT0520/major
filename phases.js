@@ -65,12 +65,10 @@ const Phases = (() => {
   function store(data) { catalogue=data.stages||{};updatedAt=data.updatedAt; }
   const get=id=>catalogue[id];
   function stageOneResult(feed) {
-    const original = get(1)?.alternativesBySnapshot?.prematch?.[0];
-    if (feed.kind !== "final" || !Number.isInteger(original?.actualHits)) return feed;
-    const previous = feed.pickem?.hits;
-    const trailing = Number.isInteger(previous) ? " 最后一场前更新的推荐单命中 "+previous+"/10 格。" : "";
-    return {...feed, pickem:{...original,kind:"settled",hits:original.actualHits},
-      modelNote:"赛前冻结推荐单最终命中 "+original.actualHits+"/10 格。"+trailing};
+    const result=get(1);
+    if(feed.kind!=="final" || !result?.pickem)return feed;
+    return {...feed,pickem:result.pickem,alternatives:result.alternatives||[],
+      modelNote:result.modelNote||feed.modelNote};
   }
   function field(d) {
     return '<section class="panel">'+heading("已确定参赛队",'<span class="eyebrow">'+d.teams.length+' TEAMS</span>')+
@@ -85,13 +83,7 @@ const Phases = (() => {
     return '<section class="panel">'+heading("淘汰赛对阵")+'<div class="phase-knockout">'+[...groups].map(([r,rows])=>'<section><h3>'+escaped(r)+'</h3>'+rows.map(matchRow).join("")+'</section>').join("")+'</div></section>';
   }
   function picksComparison(d) {
-    const snapshots = get(1)?.alternativesBySnapshot || {};
-    let list = d.alternatives || (state.phase===1 && snapshots[d.key]);
-    let title="相近填法";
-    if (!list?.length && state.phase===1 && d.kind==="final") {
-      list=snapshots.prematch;
-      title="阶段开赛前的备选单";
-    }
+    const list=d.alternatives;
     if (!list?.length || list.length<2) return "";
     const groups=[["perfect","3–0"],["ordinary","普通晋级"],["winless","0–3"]];
     const first=list[0];
@@ -116,7 +108,7 @@ const Phases = (() => {
         '<p>'+escaped(card.recommendation||card.description||(i===0?'按模型过关率选择这张单。':''))+
         (!card.recommendation&&!card.description&&i?'更看好 '+fallback+' 时可选。':'')+'</p><div class="variant-groups">'+chips+'</div></div></details>';
     }).join("");
-    return '<section class="panel variant-panel">'+heading(title)+'<div class="variant-list">'+alternatives+'</div></section>';
+    return '<section class="panel variant-panel">'+heading("相近填法")+'<div class="variant-list">'+alternatives+'</div></section>';
   }
   function pairedWaiting(d,day) {
     const rounds=new Set(day.rounds);

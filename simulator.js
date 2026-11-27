@@ -32,7 +32,7 @@ const Simulator = (() => {
   }
   function persist(){try{localStorage.setItem(storage+namespace,JSON.stringify(bundle()));}catch{}}
   function init(){
-    const key=(state.phase===1?"":"s"+state.phase+"-")+(state.selection||"latest");
+    const key=(state.phase===1?"":"s"+state.phase+"-")+"latest";
     if(key===namespace)return;
     namespace=key;undo=[];notice="";readingRound.clear();restore({});
     try{restore(JSON.parse(localStorage.getItem(storage+key)));}catch{}
@@ -49,8 +49,7 @@ const Simulator = (() => {
   function shareUrl(){
     const u=new URL(location.href);
     const shared=bundle();
-    // A live feed can be ahead of the selected archive. Keep its confirmed winners
-    // in the shared scenario so the draw can also be reproduced offline.
+    // Keep confirmed winners in the shared scenario for offline reproduction.
     for(const c of context.slice(1)){
       for(const m of c.rounds.flatMap(r=>r.matches)){
         if(m.source==="official" || (m.source==="auto" && m.official?.status==="live" && !replay)){
@@ -61,8 +60,8 @@ const Simulator = (() => {
     }
     u.searchParams.set("sim",JSON.stringify(shared));
     u.searchParams.set("stage",current);
-    u.searchParams.set("simSnapshot",state.data.key);
-    u.searchParams.delete("simPick");u.searchParams.delete("simStage");u.hash="simulator";return u;
+    for(const key of ["simPick","simStage","snapshot","simSnapshot"])u.searchParams.delete(key);
+    u.hash="simulator";return u;
   }
   function badge(team){
     if(!team)return "";
@@ -78,8 +77,8 @@ const Simulator = (() => {
       const teams=knownField?published.teams.map(t=>({...SwissEvent.catalogue.find(team=>team.id===t.id),...t})).sort((a,b)=>a.seed-b.seed):
         stage===4?advanced.map((t,i)=>({...t,seed:i+1})):SwissEvent.teams(stage,feed,advanced.map(t=>t.id));
       const index=new Map(teams.map(t=>[t.id,t]));
-      let games=SwissEvent.matches(stage,feed,{historical:!!state.selection})||[];
-      if(stage>1 && stage<=state.phase && published?.matches && (state.selection || !games.length))games=published.matches;
+      let games=SwissEvent.matches(stage,feed,{historical:false})||[];
+      if(stage>1 && stage<=state.phase && published?.matches && !games.length)games=published.matches;
       if(stage===4)games=games.map(g=>({...g,key:g.playoffSlot||g.key}));
       const official=replay?[]:games;
       const inputPicks={};
@@ -111,9 +110,9 @@ const Simulator = (() => {
     if(document.hidden || location.hash!=="#simulator")return;
     const stages=[2,3,4].filter(stage=>mode==="full"||stage<=current);
     for(const stage of stages){
-      if(stage===1||state.selection)continue;
+      if(stage===1)continue;
       Promise.resolve(SwissEvent.refresh(stage,state.data,{historical:false})).then(changed=>{
-        if(changed && !state.selection && location.hash==="#simulator")render();
+        if(changed && location.hash==="#simulator")render();
       }).catch(()=>{});
     }
   }
@@ -133,7 +132,7 @@ const Simulator = (() => {
     let score="";
     if(o && o.scoreA!=null && o.scoreB!=null && !replay && !(o.winner && m.source==="pick")){
       score=(o.a===m.a?o.scoreA+' : '+o.scoreB:o.scoreB+' : '+o.scoreA);
-    }else if(o?.status==="upcoming"&&!replay && !state.selection && o.startAt){
+    }else if(o?.status==="upcoming"&&!replay && o.startAt){
       const minutes=Math.ceil((Date.parse(o.startAt)-Date.now())/60000);
       if(minutes>0)score=minutes>=1440?Math.floor(minutes/1440)+'天 '+Math.floor(minutes%1440/60)+'时':minutes>=60?Math.floor(minutes/60)+'时 '+minutes%60+'分':minutes+'分';
     }

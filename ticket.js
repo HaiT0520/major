@@ -7,7 +7,7 @@ const ticketEditor = (() => {
   ];
   const storageKey = "matchpoint-singapore-2026-stage"+Phases.fromURL()+"-ticket";
   let draft = Array(10).fill(null), selected = null, target = null, drag = null, pressed = null;
-  let result = null, error = "", version = 0, busy = false, snapshotKey;
+  let result = null, error = "", version = 0, busy = false, snapshotKey, controller=null, queryMode="";
   function init(feed) {
     if (snapshotKey === undefined) {
       try {
@@ -23,7 +23,7 @@ const ticketEditor = (() => {
       snapshotKey = feed.key;
     }
   }
-  function invalidate() { version++; busy=false; result=null; error=""; }
+  function invalidate() { version++;controller?.abort();controller=null;busy=false;result=null;error="";queryMode=""; }
   function save() {
     invalidate();
     selected=null; target=null;
@@ -46,13 +46,17 @@ const ticketEditor = (() => {
     if (error) return '<p class="query-error" role="alert">'+escaped(error)+'</p>';
     if (!result) return '';
     const settled=result.kind==="settled";
+    const approximate=!settled && result.approximate===true;
     const delta=(result.passProbability-state.data.pickem.passProbability)*100;
-    const comparison=settled?'最终实际命中 '+result.expectedHits+' 格':Math.abs(delta)<0.005?'与推荐单过关率相同':(delta>0?'高于':'低于')+'推荐单 '+Math.abs(delta).toFixed(2)+' 个百分点';
+    const comparison=settled?'最终实际命中 '+result.expectedHits+' 格':approximate?
+      '较推荐单参考值'+(delta>=0?'高':'低')+'约 '+Math.abs(delta).toFixed(1)+' 个百分点（含抽样误差）':
+      Math.abs(delta)<0.005?'与推荐单过关率相同':(delta>0?'高于':'低于')+'推荐单 '+Math.abs(delta).toFixed(2)+' 个百分点';
     const peak=Math.max(...result.hitProbabilities,0.001);
     const bars=result.hitProbabilities.map((p,i)=>'<div class="hit-bin '+(i>=5?'pass':'')+'" title="命中 '+i+' 格 · '+pct(p,3)+'"><span class="bin-value">'+pct(p,1)+'</span><i style="height:'+Math.max(0,p/peak*48)+'px"></i><span>'+i+'</span></div>').join('');
-    return '<div class="ticket-result" aria-live="polite"><div><div class="result-label">'+(settled?'竞猜结算':'我的过关率')+'</div><strong>'+(settled?(result.passProbability?'已过关':'未过关'):pct(result.passProbability,2))+'</strong><p>'+comparison+'</p></div>'+
+    return (approximate?'<p class="query-notice" role="status">后端未连接，已使用浏览器小样本估计。相近填法的概率差可能来自抽样误差。</p>':'')+
+      '<div class="ticket-result" aria-live="polite"><div><div class="result-label">'+(settled?'竞猜结算':approximate?'我的过关率 · 近似估计':'我的过关率')+'</div><strong>'+(settled?(result.passProbability?'已过关':'未过关'):pct(result.passProbability,approximate?1:2))+'</strong><p>'+comparison+'</p></div>'+
       (settled?'':'<div class="distribution"><div class="dist-title"><b>命中格数分布</b><span>平均 '+result.expectedHits.toFixed(2)+' 格</span></div><div class="hit-bars">'+bars+'</div></div>')+'</div>'+
-      (settled?'':'<p class="query-foot">'+(result.samples/10000).toLocaleString("zh-CN")+' 万次独立检验 · 过关率的 95% 模拟抽样区间 '+pct(result.interval95[0],2)+' – '+pct(result.interval95[1],2)+'</p>');
+      (settled?'':'<p class="query-foot">'+(approximate?'浏览器小样本':'后端完整样本')+' · '+(result.samples/10000).toLocaleString("zh-CN")+' 万次检验 · 过关率的 95% 模拟抽样区间 '+pct(result.interval95[0],2)+' – '+pct(result.interval95[1],2)+'</p>');
   }
   function content() {
     const feed=state.data;
@@ -68,6 +72,7 @@ const ticketEditor = (() => {
       '<div class="draft-body"><div class="draft-tools"><p id="draft-hint">'+escaped(hint)+'</p><div><button data-draft-action="copy">套用推荐</button><button data-draft-action="clear">清空</button></div></div>'+
       '<div class="palette" data-bank aria-label="可选队伍">'+palette+'</div><div class="draft-groups">'+slots+'</div>'+
       '<div class="query-actions"><span>至少命中 <b>5</b> 格过关</span><button class="query-button" data-draft-action="query" '+(count===10&&!busy&&location.protocol!=="file:"?'':'disabled')+'>'+(busy?'计算中…':'查询我的过关率')+'</button></div>'+
+      (busy?'<p class="query-progress" role="status">'+(queryMode==="browser"?'后端未连接，正在下载小样本并计算近似概率…':queryMode==="settled"?'正在核对实际赛果…':'正在向后端查询完整样本…')+'</p>':'')+
       (location.protocol==="file:"?'<p class="query-foot">自选查询需要<a href="http://127.0.0.1:8764/#picks">打开本机服务</a>。</p>':'')+resultView()+'</div>';
   }
   function html(feed) { init(feed); return '<section class="panel draft-editor" id="draft-editor">'+content()+'</section>'; }
@@ -81,20 +86,15 @@ const ticketEditor = (() => {
   async function query() {
     if (busy || draft.some(id=>!id)) return;
     const id=++version, key=snapshotKey;
-    busy=true; error=""; result=null; repaint();
+    controller=new AbortController();
+    busy=true; error=""; result=null;queryMode="server"; repaint();
     const card=Object.fromEntries(groups.map(g=>[g.key,draft.slice(g.offset,g.offset+g.count)]));
     try {
-      let data;
-      if (state.phase===1 && ["127.0.0.1","localhost","[::1]"].includes(location.hostname) && location.port==="8764") {
-        const response=await fetch("api/ticket",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({snapshot:key,card})});
-        data=await response.json();
-        if (!response.ok) throw Error(data.error||"查询暂不可用");
-      } else {
-        data=await PublicTicket.evaluate(state.data,card);
-      }
+      const data=await PublicTicket.evaluate(state.data,card,{signal:controller.signal,
+        onStatus:mode=>{if(id===version){queryMode=mode;repaint();}}});
       if (id===version && key===state.data.key && data.snapshotKey===key) result=data;
     } catch(e){ if (id===version) error=e.message||"查询失败，请重试。"; }
-    finally { if (id===version){busy=false;repaint();} }
+    finally { if (id===version){controller=null;busy=false;repaint();} }
   }
   function handleClick(e) {
     const b=e.target.closest("#draft-editor button");

@@ -3,7 +3,7 @@ const $ = (selector, root=document) => root.querySelector(selector);
 const el = (id) => document.getElementById(id);
 const views = ["schedule", "swiss", "simulator", "teams", "picks"];
 const metrics = Phases.metricSet;
-const state = {phase:Phases.fromURL(),stageOne:null,data:null,latest:null,selection:"",day:1,group:null,rank:"pAdvance",ascending:false,pairLimit:10};
+const state = {phase:Phases.fromURL(),stageOne:null,data:null,latest:null,day:1,group:null,rank:"pAdvance",ascending:false,pairLimit:10};
 const escaped = (v) => String(v ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const pct = (v,n=1) => Number.isFinite(v) ? (v*100).toFixed(n)+"%" : "—";
 const name = (id) => state.data.teams.find(t=>t.id===id)?.short || id || "待定";
@@ -31,16 +31,9 @@ function showDialog(title,html){
 }
 function info(){
   const d=state.data;
-  const revision = d?.modelVersion==="form-durability-v2" ?
-    '<h3>近期突破能延续多久？</h3><p>本版比较参赛阵容赛前的 Valve 排名和此前四个月的排名，按重合人数加权。Nemiga 在 7 至 10 月分别排第 51、52、49、14，11 月升至第 10。前两个月各有 3 名现阵容队员，9、10 月五人相同，因此后两个月的成绩权重更高。</p>'+
-    '<p>我们也检验了扣除对手强弱后多赢了几场，以及去掉表现最好的连续十天后还剩下多少优势。为新加坡选出的这两项权重均为零。进决赛本身的扣分也为零，对手的针对是否奏效要结合禁选、对局或采访核实。</p>'+
-    '<p>上线版本采用一半校准幅度。奥斯汀、布达佩斯、科隆三个同制第二阶段共 99 场，原版和新版各猜对 52 场。Brier 概率误差从 0.24667 升到 0.24725，数值越低越好。这组回测的误差略增，样本仍有限。</p>'+
-    '<p>'+linkSource('https://github.com/ValveSoftware/counter-strike_regional_standings/tree/f8c55f250fdef796d708aa32814587932154fa04/live/2026','Valve 赛前排名档案')+' · '+
-    linkSource('https://www.hltv.org/events/8050/pgl-masters-bucharest-2026','Nemiga 布加勒斯特赛果')+' · '+
-    linkSource('https://www.hltv.org/news/44616/mo0n-we-knew-they-would-pick-dust2-and-we-trained-it-the-whole-night','mo0N 谈赛前针对 9z 的选图')+'</p>' : '';
-  showDialog("数据与来源",'<p>北京时间显示赛程。'+(state.phase===4?'八强单败淘汰，决赛 BO5。':state.phase===3?'第三阶段全程 BO3，三胜晋级、三负淘汰。':'本阶段有 16 队，三胜晋级，三负淘汰。决定晋级或淘汰的场次采用 BO3。')+'</p><p>页面自动检查最新发布的数据。已归档的胜率取自对应时点，比赛详情可查看比分和来源。</p>'+
-    (d?'<p>'+modelNote(d)+'</p>'+revision+'<p>'+d.sources.map(s=>linkSource(s.url,s.label)).join(' · ')+'</p>':'')+
-    '<p>流程模拟的视图和交互参考 '+linkSource('https://majors.im/2026/singapore','Majors.im 的新加坡 Major 模拟器')+'。第一阶段队徽来自 BO3.gg，其余队徽来自 PGL。</p>'+
+  showDialog("数据与来源",'<p>北京时间显示赛程。'+(state.phase===4?'八强单败淘汰，决赛 BO5。':state.phase===3?'第三阶段全程 BO3，三胜晋级、三负淘汰。':'本阶段有 16 队，三胜晋级，三负淘汰。决定晋级或淘汰的场次采用 BO3。')+'</p><p>页面自动检查最新发布的数据。比赛详情可查看赛前胜率、比分与来源。</p>'+
+    (d?'<p>'+modelNote(d)+'</p><p>'+d.sources.map(s=>linkSource(s.url,s.label)).join(' · ')+'</p>':'')+
+    '<p>流程模拟的视图和交互参考 '+linkSource('https://majors.im/2026/singapore','Majors.im 的新加坡 Major 模拟器')+'。队徽采用 '+linkSource('https://www.hltv.org/','HLTV')+' 的彩色俱乐部队标，改名队伍沿用改名前的俱乐部队标。</p>'+
     '<p>封面摄影：Ralff Nestor Nacor，'+linkSource('https://commons.wikimedia.org/wiki/File:Merlion_%26_Marina_Bay_Sands,_Singapore_at_Night.jpg','滨海湾夜景')+'，'+linkSource('https://creativecommons.org/licenses/by-sa/4.0/','CC BY-SA 4.0')+'。页面作裁切与色彩叠加。</p>');
 }
 function teamDialog(id){
@@ -91,7 +84,7 @@ function schedule(){
   const rows=day.rounds.map(r=>'<div class="round-head"><span>'+(state.phase===4?["","四分之一决赛","半决赛","决赛日"][r]||"淘汰赛":rounds[r])+'</span><small>ROUND '+String(r).padStart(2,"0")+'</small></div>'+games.filter(m=>m.round===r).sort((a,b)=>new Date(a.startAt)-new Date(b.startAt)).map(matchRow).join("")).join("");
   const pick=d.pickem;
   return '<div class="layout"><section class="panel">'+heading("比赛日程",'<span class="schedule-meta">已结束 '+games.filter(m=>m.status==="finished").length+' / '+day.total+' 场</span>')+'<div class="date-tabs" aria-label="选择比赛日">'+tabs+'</div>'+Phases.pairedWaiting(d,day)+rows+'<p class="schedule-foot">胜率按左、右队顺序显示。点击比赛可查看地图、比分与预测时间。</p></section><aside class="aside">'+rankBox()+
-    '<section class="panel mini-card"><div><h3>阶段竞猜</h3><p>'+(!pick?(state.phase===4?"整条签表全中":"预计过关率"):pick.kind==="settled"?'赛前推荐最终命中':'至少命中五格')+'</p></div><div><div class="value">'+(!pick?(state.phase===4&&d.brackets?.length?pct(d.brackets[0].probability):"待公布"):pick.kind==="settled"?escaped(pick.hits)+'/10':pct(pick.passProbability))+'</div><a href="#picks">查看竞猜单 →</a></div></section><div class="aside-note">'+modelNote(d)+'</div></aside></div>';
+    '<section class="panel mini-card"><div><h3>阶段竞猜</h3><p>'+(!pick?(state.phase===4?"整条签表全中":"预计过关率"):pick.kind==="settled"?'最终推荐实际命中':'至少命中五格')+'</p></div><div><div class="value">'+(!pick?(state.phase===4&&d.brackets?.length?pct(d.brackets[0].probability):"待公布"):pick.kind==="settled"?escaped(pick.hits)+'/10':pct(pick.passProbability))+'</div><a href="#picks">查看竞猜单 →</a></div></section><div class="aside-note">'+modelNote(d)+'</div></aside></div>';
 }
 function swiss(){
   const d=state.data;
@@ -142,17 +135,9 @@ function teams(){
   if(!Phases.available(state.data))return Phases.field(state.data);
   const records=liveView.standings(state.data.matches.map(liveView.match));
   const rows=state.data.teams.map(t=>({...t,...records.get(t.id)})).sort((a,b)=>(state.ascending?1:-1)*(a[state.rank]-b[state.rank])||a.seed-b.seed);
-  const compare=rows.some(t=>Number.isFinite(t.firstPrematchAdvance));
-  const change=t=>{
-    if(!Number.isFinite(t.firstPrematchAdvance))return "—";
-    const delta=(t.pAdvance-t.firstPrematchAdvance)*100;
-    return (delta>0?"+":"")+delta.toFixed(2);
-  };
-  const note=compare?modelNote(state.data)+' <button type="button" class="model-evidence" data-model-info>查看校准与回测依据</button>':"点击表头按概率排序，点击队名查看战绩和赛程。";
-  const columns=Object.entries(metrics()).map(([k,v])=>'<th><button data-sort="'+k+'" class="'+(k===state.rank?'on':'')+'">'+v+(k===state.rank?(state.ascending?' ↑':' ↓'):'')+'</button></th>'+
-    (compare&&k==="pAdvance"?'<th>初版晋级率</th><th>变化（百分点）</th>':'')).join("");
-  const row=t=>'<tr><td><button data-team="'+escaped(t.id)+'">'+logo(t.id)+escaped(t.name)+'</button></td><td>'+t.wins+'–'+t.losses+'</td>'+Object.keys(metrics()).map(k=>'<td>'+pct(t[k])+'</td>'+
-    (compare&&k==="pAdvance"?'<td>'+pct(t.firstPrematchAdvance)+'</td><td>'+change(t)+'</td>':'')).join("")+'</tr>';
+  const note="点击表头按概率排序，点击队名查看战绩和赛程。";
+  const columns=Object.entries(metrics()).map(([k,v])=>'<th><button data-sort="'+k+'" class="'+(k===state.rank?'on':'')+'">'+v+(k===state.rank?(state.ascending?' ↑':' ↓'):'')+'</button></th>').join("");
+  const row=t=>'<tr><td><button data-team="'+escaped(t.id)+'">'+logo(t.id)+escaped(t.name)+'</button></td><td>'+t.wins+'–'+t.losses+'</td>'+Object.keys(metrics()).map(k=>'<td>'+pct(t[k])+'</td>').join("")+'</tr>';
   return '<section class="panel">'+heading("队伍概率",'<span class="eyebrow">'+rows.length+' TEAMS</span>')+'<p class="page-note">'+note+'</p><div class="scroll"><table class="teamtable"><thead><tr><th>队伍</th><th>战绩</th>'+columns+'</tr></thead><tbody>'+rows.map(row).join("")+'</tbody></table></div></section>';
 }
 function picks(){
@@ -161,17 +146,13 @@ function picks(){
   if(!p?.perfect?.length)return Phases.empty("本阶段竞猜",Phases.note(d));
   const final=p.hits!=null;
   return '<section class="panel best-ticket">'+heading(final?"推荐单结算":"模型推荐竞猜单",'<span class="eyebrow">PICK’EM</span>')+
-    '<div class="picks-top"><strong>'+(final?p.hits+'/10':pct(p.passProbability,2))+'</strong><span>'+(final?'赛前冻结推荐单实际命中':'至少命中 5 格的模型概率')+'</span></div><div class="pick-groups">'+[["perfect","3–0"],["ordinary","3–1 / 3–2"],["winless","0–3"]].map(([k,title])=>'<div class="pick-group"><h3>'+title+'</h3><div class="best-members">'+p[k].map(id=>'<button class="pick-member" data-team="'+escaped(id)+'">'+logo(id)+escaped(name(id))+'</button>').join("")+'</div></div>').join("")+'</div></section>'+Phases.picksComparison(d)+ticketEditor.html(d);
+    '<div class="picks-top"><strong>'+(final?p.hits+'/10':pct(p.passProbability,2))+'</strong><span>'+(final?'推荐单实际命中':'至少命中 5 格的模型概率')+'</span></div><div class="pick-groups">'+[["perfect","3–0"],["ordinary","3–1 / 3–2"],["winless","0–3"]].map(([k,title])=>'<div class="pick-group"><h3>'+title+'</h3><div class="best-members">'+p[k].map(id=>'<button class="pick-member" data-team="'+escaped(id)+'">'+logo(id)+escaped(name(id))+'</button>').join("")+'</div></div>').join("")+'</div></section>'+Phases.picksComparison(d)+ticketEditor.html(d);
 }
 function render(){
   const d=state.data;if(!d)return;
   const nav=views.includes(location.hash.slice(1))?location.hash.slice(1):"schedule";
   document.querySelectorAll(".head-inner nav a").forEach(link=>{if(link.hash==="#"+nav)link.setAttribute("aria-current","page");else link.removeAttribute("aria-current");});
-  const refs=state.latest?.history||[];
-  const availableRefs=refs.filter(x=>x.key!==state.latest.key || x.key===state.selection || /^s[234]-prematch-/.test(x.key));
-  el("snapshot").innerHTML='<option value="">最新快照</option>'+availableRefs.slice().reverse().map(x=>'<option value="'+escaped(x.key)+'">'+escaped(x.label)+'</option>').join("");
-  el("snapshot").value=state.selection;
-  el("update-time").textContent=(state.selection?"历史快照 ":"模型 ")+stamp(d.asOf)+(d.modelLabel?" · "+d.modelLabel:"");
+  el("update-time").textContent="模型 "+stamp(d.asOf)+(d.modelLabel?" · "+d.modelLabel:"");
   liveView.indicator();
   const scrolls=new Map();
   if(nav==="simulator"){
@@ -203,7 +184,7 @@ async function loadData(path){
     document.head.append(script);
   });
 }
-async function refresh(key=state.selection,manual=false){
+async function refresh(){
   clearTimeout(retryTimer);
   const id=++requestId;
   try{
@@ -217,31 +198,22 @@ async function refresh(key=state.selection,manual=false){
     if(!latest)throw Error("阶段数据暂不可用");
     const newRelease=manifestChanged || latest.key!==state.latest?.key || latest.asOf!==state.latest?.asOf;
     state.latest=latest;
-    if(key&&!(latest.history||[]).some(h=>h.key===key))key="";
-    const raw=key?await loadData(latest.history.find(x=>x.key===key).path):latest;
-    const active=phase===1?Phases.stageOneResult(raw):Phases.prepare(raw);
+    const active=phase===1?Phases.stageOneResult(latest):Phases.prepare(latest);
     if(id!==requestId)return;
     const changed=state.data?.key!==active.key || state.data?.asOf!==active.asOf;
-    const reset=manual||!state.data||(!key&&changed&&state.day===state.data?.day);
-    state.selection=key;
-    if(changed||manual||newRelease||!state.data)use(active,reset);else {
+    const reset=!state.data||(changed&&state.day===state.data?.day);
+    if(changed||newRelease||!state.data)use(active,reset);else {
       el("problem").hidden=true;
       if(state.phase>1)liveView.onFeed();
     }
   }catch(e){if(id===requestId){el("problem").textContent="读取快照失败。"+(state.data?"当前仍显示上一份数据。":"正在重试。");el("problem").hidden=false;
-    if(!document.hidden && !state.data)retryTimer=setTimeout(()=>refresh(key,manual),3000);
+    if(!document.hidden && !state.data)retryTimer=setTimeout(refresh,3000);
   }}
 }
 el("info").onclick=info;el("close-dialog").onclick=()=>el("dialog").close();
 el("dialog").addEventListener("click",e=>{if(e.target===el("dialog"))el("dialog").close();});
-el("snapshot").onchange=e=>{
-  const u=new URL(location.href);
-  if(e.target.value)u.searchParams.set("snapshot",e.target.value);else u.searchParams.delete("snapshot");
-  u.searchParams.delete("simSnapshot");history.replaceState(null,"",u);refresh(e.target.value,true);
-};
 el("view").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b)return;
-  if(b.hasAttribute("data-model-info")){info();return;}
   if(b.dataset.team){teamDialog(b.dataset.team);return;}
   if(b.dataset.match){matchDialog(b.dataset.match);return;}
   if(b.dataset.day)state.day=Number(b.dataset.day);
@@ -256,5 +228,9 @@ window.addEventListener("hashchange",render);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh();});
 Phases.chrome();
 state.rank=state.phase===4?"pChampion":"pAdvance";
-const q=new URLSearchParams(location.search);
-refresh(q.get("snapshot") || (location.hash==="#simulator"?q.get("simSnapshot"):"") || "");setInterval(()=>{if(!document.hidden)refresh();},20000);
+const currentURL=new URL(location.href);
+if(currentURL.searchParams.has("snapshot") || currentURL.searchParams.has("simSnapshot")){
+  currentURL.searchParams.delete("snapshot");currentURL.searchParams.delete("simSnapshot");
+  history.replaceState(history.state,"",currentURL);
+}
+refresh();setInterval(()=>{if(!document.hidden)refresh();},20000);

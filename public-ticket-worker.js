@@ -29,22 +29,29 @@ async function addBlock(name, masks, hist) {
 
 function summarize(key, groups, settled) {
   const hitCounts=Array(11).fill(0);
+  const hitProbabilities=Array(11).fill(0);
+  const total=groups.reduce((sum,g)=>sum+g.hist.reduce((a,b)=>a+b,0),0);
+  const weights=groups.map(g=>Number.isFinite(g.weight)?g.weight:g.hist.reduce((a,b)=>a+b,0)/total);
+  const weightTotal=weights.reduce((a,b)=>a+b,0);
+  if(!(weightTotal>0))throw Error("样本权重异常");
   let samples=0, passed=0, weightedHits=0, low=0, high=0;
-  for(const hist of groups) {
+  for(const [index,{hist}] of groups.entries()) {
     const n=hist.reduce((a,b)=>a+b,0), wins=hist.slice(5).reduce((a,b)=>a+b,0);
+    if(!(n>0) || !(weights[index]>0))throw Error("样本数量或权重异常");
+    const weight=weights[index]/weightTotal;
     const q=wins/n, z=1.959963984540054, d=1+z*z/n;
     const center=(q+z*z/(2*n))/d, half=z*Math.sqrt(q*(1-q)/n+z*z/(4*n*n))/d;
-    low+=(n*(q-center+half))**2;
-    high+=(n*(center+half-q))**2;
+    low+=(weight*(q-center+half))**2;
+    high+=(weight*(center+half-q))**2;
     samples+=n;
-    passed+=wins;
-    hist.forEach((v,i)=>{hitCounts[i]+=v; weightedHits+=i*v;});
+    passed+=weight*q;
+    hist.forEach((v,i)=>{hitCounts[i]+=v;hitProbabilities[i]+=weight*v/n;weightedHits+=weight*i*v/n;});
   }
-  const p=passed/samples;
-  return {snapshotKey:key,samples,hitCounts,expectedHits:weightedHits/samples,
-    passProbability:p,hitProbabilities:hitCounts.map(n=>n/samples),
+  const p=passed;
+  return {snapshotKey:key,samples,hitCounts,expectedHits:weightedHits,
+    passProbability:p,hitProbabilities,
     kind:settled?"settled":"forecast", interval95:settled?[p,p]:
-    [Math.max(0,p-Math.sqrt(low)/samples),Math.min(1,p+Math.sqrt(high)/samples)]};
+    [Math.max(0,p-Math.sqrt(low)),Math.min(1,p+Math.sqrt(high))]};
 }
 
 async function score({key,teams,card,settled}) {
@@ -66,12 +73,13 @@ async function score({key,teams,card,settled}) {
       if(group>=0 && (masks[group]&(1<<i))) hits++;
     }
     const hist=Array(11).fill(0); hist[hits]=1;
-    return summarize(key,[hist],true);
+    return summarize(key,[{hist,weight:1}],true);
   }
   const response=await fetch(directory+"index.json?snapshot="+encodeURIComponent(key),{cache:"no-cache"});
   if(!response.ok) throw Error("竞猜样本暂未同步");
   const entry=(await response.json())[key];
-  if(!entry || JSON.stringify(entry.teams)!==JSON.stringify(ids)) throw Error("该阶段快照的样本尚未发布");
+  if(!entry || JSON.stringify(entry.teams)!==JSON.stringify(ids)) throw Error("该阶段样本尚未同步");
+  if(entry.groups.reduce((sum,g)=>sum+g.samples,0)>200000)throw Error("轻量查询样本正在同步，请稍后重试");
   const groups=[];
   for(const group of entry.groups) {
     const hist=Array(11).fill(0);
@@ -80,9 +88,10 @@ async function score({key,teams,card,settled}) {
       await Promise.all(group.blocks.slice(i,i+3).map(block=>addBlock(block,masks,hist)));
     }
     if(hist.reduce((a,b)=>a+b,0)!==group.samples) throw Error("样本数量与快照不符");
-    groups.push(hist);
+    groups.push({hist,weight:group.weight});
   }
-  return summarize(key,groups,false);
+  return {...summarize(key,groups,false),approximate:entry.approximate===true,
+    sourceSamples:entry.sourceSamples||entry.samples,sampling:entry.sampling};
 }
 self.onmessage=async({data})=>{
   try { self.postMessage({result:await score(data)}); }

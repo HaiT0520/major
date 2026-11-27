@@ -3,9 +3,9 @@ const liveView = (() => {
   let payload=null, pending=false, timer=null, failed=false;
   let matchById=new Map(), openMatch=null, openTeam=null;
   const online=location.port==="8764" && ["localhost","127.0.0.1","[::1]"].includes(location.hostname);
-  function isCurrent() { return state.phase===1 && !state.selection && state.data?.kind!=="final" && state.data?.key===state.latest?.key; }
+  function isCurrent() { return state.phase===1 && state.data?.kind!=="final" && state.data?.key===state.latest?.key; }
   function stageOverlay(base) {
-    if(state.phase===1 || state.selection || base.status==="finished")return null;
+    if(state.phase===1 || base.status==="finished")return null;
     const rows=SwissEvent.matches(state.phase,state.data,{historical:false});
     return rows.find(m=>m.bo===base.bo && m.round===base.round &&
       (base.a && base.b ? ((m.a===base.a&&m.b===base.b)||(m.a===base.b&&m.b===base.a))
@@ -68,7 +68,6 @@ const liveView = (() => {
   }
   function statusText() {
     if(!state.data)return "";
-    if(state.selection)return "历史数据";
     if(state.data.kind==="final"||state.data.status==="final")return "阶段已结束";
     if(state.phase>1){
       const updated=SwissEvent.lastSuccess(state.phase);
@@ -105,11 +104,11 @@ const liveView = (() => {
   }
   function onFeed(){
     indicator();
-    if(state.phase>1 && !state.selection && state.data?.status!=="final" && !document.hidden){
+    if(state.phase>1 && state.data?.status!=="final" && !document.hidden){
       const feed=state.data;
       SwissEvent.refresh(state.phase,feed,{historical:false}).then(changed=>{
         indicator();
-        if(changed && state.data===feed && !state.selection){
+        if(changed && state.data===feed){
           if(!["#simulator","#picks"].includes(location.hash))render();
           if(openMatch!==null && el("dialog").open)matchDialog(openMatch);
           if(openTeam!==null && el("dialog").open)teamDialog(openTeam);
