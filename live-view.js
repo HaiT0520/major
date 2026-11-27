@@ -39,7 +39,7 @@ const liveView = (() => {
     if (v.startAt) m.startAt=v.startAt;
     const rank={upcoming:0,live:1,finished:2};
     if(!(v.status in rank) || rank[v.status]<rank[m.status])return m;
-    if(v.status==="upcoming")return m;
+    if(v.status==="upcoming"){if(v.map && m.bo===1)m.map=v.map;return m;}
     if(v.status==="live" && (Date.parse(v.scoreAt)||0)<(Date.parse(m.scoreAt)||0))return m;
     const [sa,sb]=withSide(v.scoreA,v.scoreB);
     const [ma,mb]=withSide(v.mapScoreA,v.mapScoreB);

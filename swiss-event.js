@@ -50,7 +50,8 @@
   }));
   const byId = new Map(catalogue.map(t=>[t.id,t]));
   const byKey = new Map(catalogue.map(t=>[t.pgl,t.id]));
-  for (const [key,id] of Object.entries({parivision:"PVISION",imperial:"Imperial",bc_game_esport:"GOSH",the_one:"TheOne",bb_team:"BBTeam"})) byKey.set(key,id);
+  for (const [key,id] of Object.entries({parivision:"PVISION",imperial:"Imperial",bc_game_esport:"GOSH",
+    the_one:"TheOne",bb_team:"BBTeam",nemiga_gaming:"Nemiga",g2_esports:"G2"})) byKey.set(key,id);
 
   function teams(stage, feed, qualifiedIds=[]) {
     stage=Number(stage);
@@ -100,7 +101,11 @@
       const started=status!=="upcoming" && (mp.leftScore+mp.rightScore>0 ||
         status==="live" && valid && i===(bo===1?0:scores[0]+scores[1]));
       if(!rounds || !started)return {map,number:i+1,scoreA:null,scoreB:null};
-      return {map,number:i+1,scoreA:left===a?mp.leftScore:mp.rightScore,scoreB:left===a?mp.rightScore:mp.leftScore};
+      const [scoreA,scoreB]=left===a?[mp.leftScore,mp.rightScore]:[mp.rightScore,mp.leftScore];
+      if(done && (!rounds.finished || i>=scores[0]+scores[1] ||
+        i+1===scores[0]+scores[1] && (scoreA>scoreB)!==(scores[0]>scores[1])))
+        return {map,number:i+1,scoreA:null,scoreB:null};
+      return {map,number:i+1,scoreA,scoreB};
     }).filter(Boolean);
     const dated=/^(\d{2})\.(\d{2})\.(\d{4})$/.exec(row.date);
     const startAt=dated && /^\d\d:\d\d$/.test(row.time)?
