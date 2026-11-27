@@ -44,7 +44,7 @@
     ["Falcons","Team Falcons","falcons","EU",7,"falc"],
     ["Legacy","Legacy","legacy","AM",9,"lega"]
   ];
-  const logoURL = id => "assets/"+encodeURIComponent(id)+".webp?v=2";
+  const logoURL = id => "assets/"+encodeURIComponent(id)+".webp?v=3";
   const catalogue = entries.map(([id,name,pgl,region,vrs,code],i)=>({
     id, name, short:({"TheOne":"The One","BBTeam":"BB Team","MongolZ":"The MongolZ"})[id] || id,
     pgl,region,vrs,code,entryStage:i<16?1:i<24?2:3,logo:logoURL(id)

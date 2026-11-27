@@ -1,16 +1,102 @@
-队标用于识别赛事参赛队伍，商标和图形权益归各队及相应权利人。此站为独立赛事看板。
+新加坡 Major 参赛队标
 
-新加坡二阶段直邀队使用图稿
-PGL 新加坡 Major 参赛队页面：https://www.pglesports.com/cs2/pgl-major-singapore-2026/
-HLTV 新加坡二阶段队伍表：https://www.hltv.org/events/9304/pgl-major-singapore-2026-stage-2
+图稿来源为 HLTV 队伍页面和赛事页。本站保留原色，有深色背景版本时优先选用。图形及商标权益归各自权利人。
 
-FUT  https://img-cdn.hltv.org/teamlogo/Os71GAOy8KDuQFc0M8HE6O.png?ixlib=java-2.1.0&w=100&s=828ea5ad48c3f170daf3ab9d983c8048
-Nemiga  https://img-cdn.hltv.org/teamlogo/6ZPCm5r3XyGByXkFGiRnLh.png?ixlib=java-2.1.0&w=100&s=ec51c91e709bd6a892d27978e83115d5
-G2  https://img-cdn.hltv.org/teamlogo/zFLwAELOD15BjJSDMMNBWQ.png?ixlib=java-2.1.0&w=100&s=88aeba1564bc27de69fb2302e47e1a7c
-TheOne  https://www.pglesports.com/images/CS2_events/PglMajorSingapore/teams/1win.svg
-NAVI  https://img-cdn.hltv.org/teamlogo/9iMirAi7ArBLNU8p3kqUTZ.svg?ixlib=java-2.1.0&s=4dd8635be16122656093ae9884675d0c
-Astralis  https://img-cdn.hltv.org/teamlogo/9bgXHp-oh1oaXr7F0mTGmd.svg?ixlib=java-2.1.0&s=f567161ab183001be33948b98c4b2067
-MongolZ  https://img-cdn.hltv.org/teamlogo/bRk2sh_tSTO6fq1GLhgcal.png?ixlib=java-2.1.0&w=100&s=1bd99148a19e1e706b543500206901d4
-MIBR  https://www.pglesports.com/images/CS2_events/PglMajorSingapore/teams/mibr.svg
+页面沿用参赛名称。GOSH 使用 BC.Game 队标，The One 使用 1win 队标，PVISION 使用 PARIVISION 队标。
+https://www.hltv.org/news/45947/pgl-announces-name-changes-for-four-teams-at-singapore-major
 
-The One 与 MIBR 使用 PGL 赛事版白色图稿。FUT 的红星、G2 的红眼和其余各队的原色均保留。颜色数据可核对 PGL 二阶段赛程：https://news.pglesports.com/api/groupStageEndpoint?stage=2
+100T
+https://img-cdn.hltv.org/teamlogo/8ypjXDe-cyvtUGWqzqhjce.png?ixlib=java-2.1.0&w=400&s=ca7e71cff4995446e1f561b2aed31a8f
+
+9z
+https://img-cdn.hltv.org/teamlogo/ih4DgTvRI4y8l9DKevo2G8.png?ixlib=java-2.1.0&w=400&s=86a079256bf7a0ad2b07a79a42b39ec4
+
+Astralis
+https://img-cdn.hltv.org/teamlogo/9bgXHp-oh1oaXr7F0mTGmd.svg?ixlib=java-2.1.0&s=f567161ab183001be33948b98c4b2067
+
+Aurora
+https://img-cdn.hltv.org/teamlogo/yJzPNOeXlyiniNxanYJCrv.png?ixlib=java-2.1.0&w=100&s=f23524510b9d49ea59166e6e2efee1ac
+
+BB Team / BetBoom
+https://img-cdn.hltv.org/teamlogo/G4ZrdB0-q41USPd_z27IQA.png?ixlib=java-2.1.0&w=100&s=cb2c8c3b65e034368ff60f1c6a8d04ef
+
+CW
+https://img-cdn.hltv.org/teamlogo/esvV905BqvAKUUPLq8e89T.png?ixlib=java-2.1.0&w=400&s=e3f2690c7d62fe9ada29f81e9cb4a369
+
+DENDELE
+https://img-cdn.hltv.org/teamlogo/xKB2zOMgkFKoD-MLU484IV.png?ixlib=java-2.1.0&w=400&s=5083b1f5cc0e9ae9bfa15b2fddcb7040
+
+EF
+https://img-cdn.hltv.org/teamlogo/Tafdq71X3B_-73b73bAixr.png?ixlib=java-2.1.0&w=400&s=ab83233a5f045aa6e5fe4ed9d3426e67
+
+FURIA
+https://img-cdn.hltv.org/teamlogo/mvNQc4csFGtxXk5guAh8m1.svg?ixlib=java-2.1.0&s=11e5056829ad5d6c06c5961bbe76d20c
+
+FUT
+https://img-cdn.hltv.org/teamlogo/Os71GAOy8KDuQFc0M8HE6O.png?ixlib=java-2.1.0&w=100&s=828ea5ad48c3f170daf3ab9d983c8048
+
+FaZe
+https://img-cdn.hltv.org/teamlogo/Wo9goa1eRNUtd6NLvrmwW8.png?ixlib=java-2.1.0&w=400&s=2aec4120f8f6a92d060faf8e669ad3eb
+
+Falcons
+https://img-cdn.hltv.org/teamlogo/4eJSkDQINNM6Tbs4WvLzkN.png?ixlib=java-2.1.0&w=100&s=01e7f9dd30b34e66f429f43627c2e005
+
+FlyQuest
+https://img-cdn.hltv.org/teamlogo/fmqTgF6Ziw0uied7MO3_ri.png?ixlib=java-2.1.0&w=400&s=5a79a798e83ac5bf893ba63f937f4355
+
+G2
+https://img-cdn.hltv.org/teamlogo/zFLwAELOD15BjJSDMMNBWQ.png?ixlib=java-2.1.0&w=100&s=88aeba1564bc27de69fb2302e47e1a7c
+
+GOSH / BC.Game
+https://img-cdn.hltv.org/teamlogo/Sh3oQBtd6xemdynQ-H_NJa.png?ixlib=java-2.1.0&w=100&s=9cd95f30d9a1b0c8e05c1b788d812d3c
+
+HEROIC
+https://img-cdn.hltv.org/teamlogo/4S22uk_gnZTiQiI-hhH4yp.png?ixlib=java-2.1.0&w=400&s=8cfdac5a327ed4124b8c85e7f2155bf4
+
+Imperial
+https://img-cdn.hltv.org/teamlogo/bBDk6-rND06sAzn67b5RdP.png?ixlib=java-2.1.0&w=400&s=422cb48983bdcb9f4d0555cebeeb344b
+
+LVG
+https://img-cdn.hltv.org/teamlogo/DPcHT21uWwK1hDD_3txlL9.png?ixlib=java-2.1.0&w=400&s=177e0501a9a9f4c97cadc7aa99494ec6
+
+Legacy
+https://img-cdn.hltv.org/teamlogo/RWbHH6RA8uGwJurGeLFvSr.png?ixlib=java-2.1.0&w=100&s=10ff29ff632e0bd82922f4fcd83f930f
+
+Liquid
+https://img-cdn.hltv.org/teamlogo/JMeLLbWKCIEJrmfPaqOz4O.svg?ixlib=java-2.1.0&s=c02caf90234d3a3ebac074c84ba1ea62
+
+M80
+https://img-cdn.hltv.org/teamlogo/YsaWwP_VrkbHzuhszuANEK.png?ixlib=java-2.1.0&w=400&s=a9c93be6f95a902a1f3ecd02ecc2f8ea
+
+MIBR
+https://img-cdn.hltv.org/teamlogo/m_JQ624LNFHWiUY-25uuaE.png?ixlib=java-2.1.0&w=100&s=bbcc329085294daa8e8a7111850b331b
+
+MOUZ
+https://img-cdn.hltv.org/teamlogo/IejtXpquZnE8KqYPB1LNKw.svg?ixlib=java-2.1.0&s=7fd33b8def053fbfd8fdbb58e3bdcd3c
+
+MongolZ
+https://img-cdn.hltv.org/teamlogo/bRk2sh_tSTO6fq1GLhgcal.png?ixlib=java-2.1.0&w=100&s=1bd99148a19e1e706b543500206901d4
+
+NAVI
+https://img-cdn.hltv.org/teamlogo/9iMirAi7ArBLNU8p3kqUTZ.svg?ixlib=java-2.1.0&s=4dd8635be16122656093ae9884675d0c
+
+NIP
+https://img-cdn.hltv.org/teamlogo/mbY2YeFKUAbL9NyO6ab7-c.png?ixlib=java-2.1.0&w=400&s=fd11a1b87d848217898f194837b6407c
+
+Nemiga
+https://img-cdn.hltv.org/teamlogo/6ZPCm5r3XyGByXkFGiRnLh.png?ixlib=java-2.1.0&w=100&s=ec51c91e709bd6a892d27978e83115d5
+
+PVISION / PARIVISION
+https://img-cdn.hltv.org/teamlogo/MFcDe-M8wfGOUU6x4sRELR.png?ixlib=java-2.1.0&w=100&s=dccd3a3351064dd1ab9afebbed8443a9
+
+Spirit
+https://img-cdn.hltv.org/teamlogo/ywdn4tmAvXfllLeV2SkkvF.png?ixlib=java-2.1.0&w=100&s=e441b77b1cafbca20ba9f667caca56f4
+
+The One / 1win
+https://img-cdn.hltv.org/teamlogo/zbmzI2IMFNwHUvTO4EHaTZ.png?ixlib=java-2.1.0&w=100&s=4386b1cf14aad08da4fa872894c4c44f
+
+Vitality
+https://img-cdn.hltv.org/teamlogo/yeXBldn9w8LZCgdElAenPs.png?ixlib=java-2.1.0&w=100&s=a0731380d1075205aadb30905a49da55
+
+Wildcard
+https://img-cdn.hltv.org/teamlogo/G1K6vvihgsmN98BxRF8uJ7.png?ixlib=java-2.1.0&w=400&s=f74712a7a45145d136976ed1f41c89a9
