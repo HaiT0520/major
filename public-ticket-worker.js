@@ -68,14 +68,17 @@ async function score({key,teams,card,settled}) {
     const hist=Array(11).fill(0); hist[hits]=1;
     return summarize(key,[hist],true);
   }
-  const response=await fetch(directory+"index.json",{cache:"no-cache"});
+  const response=await fetch(directory+"index.json?snapshot="+encodeURIComponent(key),{cache:"no-cache"});
   if(!response.ok) throw Error("竞猜样本暂未同步");
   const entry=(await response.json())[key];
   if(!entry || JSON.stringify(entry.teams)!==JSON.stringify(ids)) throw Error("该阶段快照的样本尚未发布");
   const groups=[];
   for(const group of entry.groups) {
     const hist=Array(11).fill(0);
-    for(const block of group.blocks) await addBlock(block,masks,hist);
+    // Bound temporary decoding memory while overlapping CDN round trips.
+    for(let i=0;i<group.blocks.length;i+=3) {
+      await Promise.all(group.blocks.slice(i,i+3).map(block=>addBlock(block,masks,hist)));
+    }
     if(hist.reduce((a,b)=>a+b,0)!==group.samples) throw Error("样本数量与快照不符");
     groups.push(hist);
   }
