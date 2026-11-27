@@ -3,6 +3,7 @@
 window.PublicTicket = (() => {
   const workerUrl = new URL("public-ticket-worker.js", document.currentScript.src);
   const local=location.port==="8764" && ["localhost","127.0.0.1","[::1]"].includes(location.hostname);
+  let configEndpoint=null, configExpires=0, configPending=null;
   async function json(url,options,timeout,signal) {
     const controller=new AbortController(), abort=()=>controller.abort();
     if(signal?.aborted)throw new DOMException("已取消","AbortError");
@@ -13,6 +14,27 @@ window.PublicTicket = (() => {
       if(!response.ok)throw Error("查询服务暂不可用");
       return await response.json();
     } finally {clearTimeout(timer);signal?.removeEventListener("abort",abort);}
+  }
+  function runtime() {
+    if(Date.now()<configExpires)return Promise.resolve(configEndpoint);
+    if(!configPending){
+      configPending=json("data/runtime.json",{cache:"no-store",credentials:"omit"},6000).then(config=>{
+        if(!config.ticketEndpoint)return null;
+        const url=new URL(config.ticketEndpoint);
+        return url.protocol==="https:" && !url.username && !url.password?url.href:null;
+      }).catch(()=>null).then(endpoint=>{
+        configEndpoint=endpoint;configExpires=Date.now()+30000;return endpoint;
+      }).finally(()=>{configPending=null;});
+    }
+    return configPending;
+  }
+  function endpoint(signal) {
+    return new Promise((resolve,reject)=>{
+      if(signal?.aborted){reject(new DOMException("已取消","AbortError"));return;}
+      const abort=()=>reject(new DOMException("已取消","AbortError"));
+      signal?.addEventListener("abort",abort,{once:true});
+      runtime().then(value=>{signal?.removeEventListener("abort",abort);resolve(value);});
+    });
   }
   function browser(feed,card,signal) {
     return new Promise((resolve, reject) => {
@@ -47,20 +69,11 @@ window.PublicTicket = (() => {
       return {...await browser(feed,card,signal),computation:"settled",approximate:false};
     }
     onStatus("server");
-    let endpoint=local?new URL("api/ticket",location.href).href:null;
-    if(!endpoint){
-      try {
-        const config=await json("data/runtime.json",{cache:"no-store",credentials:"omit"},2000,signal);
-        if(config.ticketEndpoint){
-          const url=new URL(config.ticketEndpoint);
-          if(url.protocol==="https:" && !url.username && !url.password)endpoint=url.href;
-        }
-      } catch {}
-    }
+    const target=local?new URL("api/ticket",location.href).href:await endpoint(signal);
     if(signal?.aborted)throw new DOMException("已取消","AbortError");
-    if(endpoint){
+    if(target){
       try {
-        const result=await json(endpoint,{method:"POST",credentials:"omit",headers:{"Content-Type":"application/json"},
+        const result=await json(target,{method:"POST",credentials:"omit",headers:{"Content-Type":"application/json"},
           body:JSON.stringify({snapshot:feed.key,card})},12000,signal);
         if(!valid(result,feed.key))throw Error("查询结果与当前数据不同步");
         return {...result,computation:"server",approximate:false};
@@ -71,5 +84,6 @@ window.PublicTicket = (() => {
     const result=await browser(feed,card,signal);
     return {...result,computation:"browser",approximate:true};
   }
+  if(!local)void runtime();
   return {evaluate};
 })();
