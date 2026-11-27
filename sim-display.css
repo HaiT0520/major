@@ -1,0 +1,43 @@
+.sd-options{margin:10px 22px 14px;padding:7px 10px 9px;border:var(--border);border-radius:4px;display:flex;align-items:center;flex-wrap:wrap;gap:6px 14px;color:var(--muted);}
+.sd-options legend{font-size:11px;padding:0 5px;}
+.sd-options label{display:inline-flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;}
+.sd-options input{accent-color:var(--acid);margin:0;}
+.sd-options label:has(input:disabled){opacity:.5;}
+.sd-team-info{font:9px/1.15 var(--mono);color:#b7b3b0;white-space:normal;letter-spacing:-.2px;}
+.sim-side:has(.sd-team-info){display:grid;grid-template-columns:auto minmax(0,auto);align-content:center;justify-content:center;row-gap:2px;}
+.sim-side .sd-team-info{grid-column:1/-1;text-align:center;}
+.sd-long .sd-team-name{white-space:normal;overflow-wrap:anywhere;text-align:left;}
+.sd-minimal .sim-match{grid-template-columns:1fr;gap:0;background:transparent;}
+.sd-minimal .sim-side,.sd-minimal .sim-side:has(.sd-team-info){display:flex;align-items:center;justify-content:flex-start;gap:4px;min-height:22px;padding:2px 5px;}
+.sd-minimal .sim-side .sd-team-info{margin-left:auto;}
+.sd-minimal .sim-side + .sim-side{border-top:1px solid #ffffff0c;}
+.sd-minimal .sim-side.selected,.sd-bracket .sim-side.selected{box-shadow:inset 2px 0 var(--acid);}
+.sd-minimal .sim-side.real.selected,.sd-bracket .sim-side.real.selected{box-shadow:inset 2px 0 var(--pass);}
+.sd-minimal .sim-match-foot{padding:2px 5px;}
+.sd-bracket .sim-bracket-col{position:relative;}
+.sd-bracket .sim-record{border:1px solid #51443e;border-radius:5px;position:relative;padding:6px;}
+.sd-bracket .sim-record:after{content:"";height:1px;width:12px;position:absolute;left:100%;top:50%;background:#766055;}
+.sd-bracket .sim-record h4{font:600 14px/1.25 BarlowScore,var(--mono);}
+.sd-bracket .sim-record .sim-match:last-child{margin-bottom:0;}
+.sd-ranks{margin:8px 0;border:var(--border);border-radius:4px;background:#1b1c20;padding:5px 6px;}
+.sd-ranks h4,.sd-ranks summary{font:600 11px/1.4 var(--font);margin:0;padding:2px 0;color:#d8d4d1;}
+.sd-ranks summary{cursor:pointer;}
+.sd-ranks summary span,.sd-ranks h4 span{color:var(--muted);margin-left:4px;font-weight:400;}
+.sd-ranks table{border-collapse:collapse;width:100%;font:11px/1.4 var(--font);font-variant-numeric:tabular-nums;}
+.sd-ranks th,.sd-ranks td{border-bottom:1px solid #ffffff0e;text-align:right;padding:2px;}
+.sd-ranks th{color:var(--muted);font-size:10px;font-weight:400;}
+.sd-ranks th:first-child,.sd-ranks td:first-child{text-align:left;}
+.sd-ranks td:first-child>small{display:inline-block;width:14px;color:#a6a4a2;font:10px var(--mono);}
+.sd-ranks button{border:0;background:transparent;display:inline-flex;align-items:center;vertical-align:middle;gap:3px;padding:3px 0;color:var(--pale);cursor:pointer;max-width:calc(100% - 15px);font-size:11px;}
+.sd-ranks button:hover{color:var(--acid);}
+.sd-ranks .logo{width:14px;height:14px;object-fit:contain;}
+.sd-classic .sim-classic>div{display:grid;grid-template-columns:minmax(0,1fr) minmax(165px,.36fr);column-gap:18px;align-items:start;border-bottom:var(--border);}
+.sd-classic .sim-classic>div>.sim-round-title{grid-column:1/-1;border-bottom:0;}
+.sd-classic .sim-classic-games{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));}
+.sd-classic .sd-ranks{margin-top:5px;}
+.sd-classic .sim-classic-rank,.sd-hide-out .sim-result.out{display:none;}
+.sd-only .sim-result,.sd-only .sim-finish,.sd-only .sim-rank-link,.sd-only .sd-ranks{display:none;}
+.sd-only .sim-grid,.sd-only .sim-bracket{grid-template-columns:repeat(calc(var(--cols) - 1),minmax(143px,1fr));min-width:max(100%,calc((var(--cols) - 1)*158px));}
+.sd-classic.sd-only .sim-classic>div{grid-template-columns:minmax(0,1fr);}
+.sd-classic:has(.sim-stage-head .sim-kicker:first-child) .sim-classic>div:not(:has(.sd-ranks)){grid-template-columns:minmax(0,1fr);}
+@media(max-width:690px){.sd-options{margin:8px 12px;padding:5px 7px 8px;gap:5px 10px;}.sd-options label{font-size:11px;}.sd-classic .sim-classic>div{grid-template-columns:1fr;}.sd-classic .sim-classic-games{grid-template-columns:repeat(2,minmax(0,1fr));}}

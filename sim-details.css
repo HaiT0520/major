@@ -1,0 +1,31 @@
+.simd {font-size:13px;}
+.simd section + section,.simd-pick + section{margin-top:16px;}
+.simd h3{font-size:14px;margin:0 0 8px;}
+.simd h3 small,.simd-sub,.simd-context{font-size:12px;color:var(--muted);}
+.simd h3 small{margin-left:.5em;font-weight:400;}
+.simd-pick,.simd-context,.simd-score{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.simd-pick,.simd-score{background:#27282c;border:var(--border);border-radius:4px;padding:10px;}
+.simd-pick>span:first-child,.simd-num{color:var(--muted);}
+.simd-team{display:inline-flex;align-items:center;gap:5px;vertical-align:middle;}
+.simd-team img{width:20px;height:20px;object-fit:contain;}
+.simd-score b{white-space:nowrap;font-variant-numeric:tabular-nums;}
+.simd-maps{list-style:none;padding:0 4px;margin:3px 0;}
+.simd-maps li{display:flex;justify-content:space-between;border-bottom:var(--border);padding:4px 0;}
+.simd-maps li strong{font-variant-numeric:tabular-nums;}
+.simd table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;}
+.simd th,.simd td{text-align:right;border-bottom:var(--border);padding:5px 3px;}
+.simd th{font-weight:500;font-size:11px;color:var(--muted);}
+.simd th:first-child,.simd td:first-child{text-align:left;}
+.simd-num{display:inline-block;width:20px;font-size:11px;}
+.simd .simd-link{border:0;background:transparent;color:inherit;padding:3px;cursor:pointer;}
+.simd .simd-link:hover span,.simd .simd-back:hover{color:var(--acid);}
+.simd button:focus-visible{outline:2px solid var(--acid);}
+.simd-switch{display:inline-flex;border:var(--border);border-radius:4px;overflow:hidden;}
+.simd-switch button,.simd-back{background:transparent;color:var(--muted);border:0;padding:5px 10px;cursor:pointer;}
+.simd-switch button[aria-pressed=true]{color:#181818;background:var(--acid);}
+.simd-back{padding:8px 0;display:block;}
+.simd-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:14px 0;}
+.simd-metrics div{border:var(--border);border-radius:3px;padding:5px 7px;background:#242528;}
+.simd-metrics small,.simd-metrics b{display:block;}
+.simd-metrics small{font-size:11px;color:var(--muted);}
+.simd-metrics b{font-size:19px;}

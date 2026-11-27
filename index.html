@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#131416">
+  <title>新加坡 Major 2026 · 瑞士轮比赛中心</title>
+  <link rel="icon" href="data:,"><link rel="stylesheet" href="app.css"><link rel="stylesheet" href="ticket.css"><link rel="stylesheet" href="simulator.css"><link rel="stylesheet" href="sim-details.css"><link rel="stylesheet" href="sim-display.css">
+  <link rel="stylesheet" href="swiss-path.css"><link rel="stylesheet" href="phases.css">
+</head>
+<body>
+<header class="topbar"><div class="wrap head-inner">
+  <a class="brand" href="#schedule" aria-label="Matchpoint 比赛中心"><i class="mark" aria-hidden="true"><b></b><b></b><b></b></i>MATCHPOINT</a>
+  <nav aria-label="比赛导航"><a href="#schedule">赛程中心</a><a href="#swiss">瑞士轮</a><a href="#simulator">流程模拟</a><a href="#teams">队伍概率</a><a href="#picks">竞猜单</a></nav>
+  <button id="info" class="info" type="button" title="数据与来源" aria-label="数据与来源"><span aria-hidden="true">i</span><b>数据来源</b></button>
+</div></header>
+<main class="wrap">
+  <section class="hero" aria-label="新加坡 Major 2026 第一阶段">
+    <div class="hero-image"></div><div class="hero-grid"></div>
+    <div class="hero-text"><div class="kicker"><i></i> COUNTER-STRIKE 2 <span>/</span> PGL MAJOR</div>
+      <h1>SINGAPORE<br><em>MAJOR 2026</em></h1>
+      <div class="hero-meta"><strong>瑞士轮 · 第一阶段</strong><span></span>11 月 24 日 — 27 日</div></div>
+    <div class="hero-coordinate"><i></i> SINGAPORE <span>/</span> SG</div>
+  </section>
+  <nav class="phase-bar" id="phase-bar" aria-label="选择赛事阶段"></nav>
+  <div class="data-line"><div class="clocks"><i class="status-dot"></i><span id="update-time">正在读取数据</span><span id="live-status"></span></div><div class="snapshot-box"><label for="snapshot">数据快照</label><select id="snapshot"><option value="">当前快照</option></select></div></div>
+  <div id="problem" role="status" hidden></div>
+  <div id="view" aria-live="off"><div class="panel loading">加载比赛与概率…</div></div>
+  <footer><span><b>MATCHPOINT</b> / 新加坡 Major 2026</span><span>逐场更新预测 · 北京时间</span></footer>
+</main>
+<dialog id="dialog"><div class="dialog-top"><b id="dialog-title"></b><button type="button" id="close-dialog" aria-label="关闭">×</button></div><div id="dialog-body"></div></dialog>
+<script>
+  if(location.protocol==="file:"){
+    const local=new Image();
+    local.onload=()=>location.replace("http://127.0.0.1:8764/"+(location.hash||"#schedule"));
+    local.src="http://127.0.0.1:8764/assets/NIP.webp?open="+Date.now();
+  }
+</script>
+<script src="phases.js" defer></script><script src="round-odds.js" defer></script><script src="live-view.js" defer></script><script src="public-ticket.js" defer></script><script src="ticket.js" defer></script>
+<script src="swiss-engine.js" defer></script><script src="sim-finals.js" defer></script><script src="swiss-event.js" defer></script><script src="sim-details.js" defer></script><script src="sim-display.js" defer></script><script src="simulator.js" defer></script><script src="app.js" defer></script>
+</body></html>
