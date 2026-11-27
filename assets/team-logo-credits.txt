@@ -1,0 +1,16 @@
+队标用于识别赛事参赛队伍，商标和图形权益归各队及相应权利人。此站为独立赛事看板。
+
+新加坡二阶段直邀队使用图稿
+PGL 新加坡 Major 参赛队页面：https://www.pglesports.com/cs2/pgl-major-singapore-2026/
+HLTV 新加坡二阶段队伍表：https://www.hltv.org/events/9304/pgl-major-singapore-2026-stage-2
+
+FUT  https://img-cdn.hltv.org/teamlogo/Os71GAOy8KDuQFc0M8HE6O.png?ixlib=java-2.1.0&w=100&s=828ea5ad48c3f170daf3ab9d983c8048
+Nemiga  https://img-cdn.hltv.org/teamlogo/6ZPCm5r3XyGByXkFGiRnLh.png?ixlib=java-2.1.0&w=100&s=ec51c91e709bd6a892d27978e83115d5
+G2  https://img-cdn.hltv.org/teamlogo/zFLwAELOD15BjJSDMMNBWQ.png?ixlib=java-2.1.0&w=100&s=88aeba1564bc27de69fb2302e47e1a7c
+TheOne  https://www.pglesports.com/images/CS2_events/PglMajorSingapore/teams/1win.svg
+NAVI  https://img-cdn.hltv.org/teamlogo/9iMirAi7ArBLNU8p3kqUTZ.svg?ixlib=java-2.1.0&s=4dd8635be16122656093ae9884675d0c
+Astralis  https://img-cdn.hltv.org/teamlogo/9bgXHp-oh1oaXr7F0mTGmd.svg?ixlib=java-2.1.0&s=f567161ab183001be33948b98c4b2067
+MongolZ  https://img-cdn.hltv.org/teamlogo/bRk2sh_tSTO6fq1GLhgcal.png?ixlib=java-2.1.0&w=100&s=1bd99148a19e1e706b543500206901d4
+MIBR  https://www.pglesports.com/images/CS2_events/PglMajorSingapore/teams/mibr.svg
+
+The One 与 MIBR 使用 PGL 赛事版白色图稿。FUT 的红星、G2 的红眼和其余各队的原色均保留。颜色数据可核对 PGL 二阶段赛程：https://news.pglesports.com/api/groupStageEndpoint?stage=2

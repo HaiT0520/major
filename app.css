@@ -11,3 +11,6 @@
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 .schedule-foot,.aside-note{color:var(--muted);font:12px/1.7 var(--font)}.schedule-foot{margin:0;padding:12px 20px;border-top:var(--border)}.aside-note{padding:0 4px}
 @media(min-width:691px){.hero-image{left:23%;background-position:center 17%}.hero:before{background:linear-gradient(90deg,#191719 0%,#221c1d 22%,rgba(40,29,29,.9) 30%,rgba(46,31,31,.52) 52%,rgba(96,51,39,.10) 78%),linear-gradient(0deg,rgba(15,14,15,.36),transparent 50%)}}
+
+/* PGL lists MIBR in navy; the tournament wordmark itself is white. */
+.logo[src*="/MIBR.webp"] {background:#1b2a6d;border-radius:3px;padding:1px;filter:none}

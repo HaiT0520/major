@@ -11,7 +11,11 @@ const dateFmt = (s,options) => s? new Intl.DateTimeFormat("zh-CN",{timeZone:"Asi
 const clock = (s) => dateFmt(s,{hour:"2-digit",minute:"2-digit"});
 const stamp = (s) => dateFmt(s,{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});
 const safeURL = (v) => {try{const u=new URL(v);return /^https?:$/.test(u.protocol)?escaped(u.href):"#";}catch{return "#";}};
-const logo = (id) => id ? '<img class="logo" alt="" src="assets/'+encodeURIComponent(id)+'.webp">' : "";
+function logo(id) {
+  if (!id) return "";
+  const team = SwissEvent.catalogue.find(t => t.id===id);
+  return team ? '<img class="logo" alt="" src="'+escaped(team.logo)+'">' : "";
+}
 const heading = (title,extra="") => '<div class="section-head"><div class="title-wrap"><i class="accent-dash"></i><h2>'+title+'</h2></div>'+extra+'</div>';
 const linkSource=(u,title)=>'<a href="'+safeURL(u)+'" target="_blank" rel="noopener noreferrer">'+escaped(title)+'</a>';
 const modelNote=d=>escaped((d.modelNote||"").replace('进行中小分仅供查看','竞猜概率根据已完赛赛果重算，实时单场胜率另随局分更新'));
@@ -27,8 +31,15 @@ function showDialog(title,html){
 }
 function info(){
   const d=state.data;
+  const revision = d?.modelVersion==="form-durability-v2" ?
+    '<h3>近期突破能延续多久？</h3><p>本版比较参赛阵容赛前的 Valve 排名和此前四个月的排名，按重合人数加权。Nemiga 在 7 至 10 月分别排第 51、52、49、14，11 月升至第 10。前两个月各有 3 名现阵容队员，9、10 月五人相同，因此后两个月的成绩权重更高。</p>'+
+    '<p>我们也检验了扣除对手强弱后多赢了几场，以及去掉表现最好的连续十天后还剩下多少优势。为新加坡选出的这两项权重均为零。进决赛本身的扣分也为零，对手的针对是否奏效要结合禁选、对局或采访核实。</p>'+
+    '<p>上线版本采用一半校准幅度。奥斯汀、布达佩斯、科隆三个同制第二阶段共 99 场，原版和新版各猜对 52 场。Brier 概率误差从 0.24667 升到 0.24725，数值越低越好。这组回测的误差略增，样本仍有限。</p>'+
+    '<p>'+linkSource('https://github.com/ValveSoftware/counter-strike_regional_standings/tree/f8c55f250fdef796d708aa32814587932154fa04/live/2026','Valve 赛前排名档案')+' · '+
+    linkSource('https://www.hltv.org/events/8050/pgl-masters-bucharest-2026','Nemiga 布加勒斯特赛果')+' · '+
+    linkSource('https://www.hltv.org/news/44616/mo0n-we-knew-they-would-pick-dust2-and-we-trained-it-the-whole-night','mo0N 谈赛前针对 9z 的选图')+'</p>' : '';
   showDialog("数据与来源",'<p>北京时间显示赛程。'+(state.phase===4?'八强单败淘汰，决赛 BO5。':state.phase===3?'第三阶段全程 BO3，三胜晋级、三负淘汰。':'本阶段有 16 队，三胜晋级，三负淘汰。决定晋级或淘汰的场次采用 BO3。')+'</p><p>页面自动检查最新发布的数据。已归档的胜率取自对应时点，比赛详情可查看比分和来源。</p>'+
-    (d?'<p>'+modelNote(d)+'</p><p>'+d.sources.map(s=>linkSource(s.url,s.label)).join(' · ')+'</p>':'')+
+    (d?'<p>'+modelNote(d)+'</p>'+revision+'<p>'+d.sources.map(s=>linkSource(s.url,s.label)).join(' · ')+'</p>':'')+
     '<p>流程模拟的视图和交互参考 '+linkSource('https://majors.im/2026/singapore','Majors.im 的新加坡 Major 模拟器')+'。第一阶段队徽来自 BO3.gg，其余队徽来自 PGL。</p>'+
     '<p>封面摄影：Ralff Nestor Nacor，'+linkSource('https://commons.wikimedia.org/wiki/File:Merlion_%26_Marina_Bay_Sands,_Singapore_at_Night.jpg','滨海湾夜景')+'，'+linkSource('https://creativecommons.org/licenses/by-sa/4.0/','CC BY-SA 4.0')+'。页面作裁切与色彩叠加。</p>');
 }
@@ -131,8 +142,18 @@ function teams(){
   if(!Phases.available(state.data))return Phases.field(state.data);
   const records=liveView.standings(state.data.matches.map(liveView.match));
   const rows=state.data.teams.map(t=>({...t,...records.get(t.id)})).sort((a,b)=>(state.ascending?1:-1)*(a[state.rank]-b[state.rank])||a.seed-b.seed);
-  return '<section class="panel">'+heading("队伍概率",'<span class="eyebrow">'+rows.length+' TEAMS</span>')+'<p class="page-note">点击表头按概率排序；点击队名查看该队的战绩和赛程。</p><div class="scroll"><table class="teamtable"><thead><tr><th>队伍</th><th>战绩</th>'+Object.entries(metrics()).map(([k,v])=>'<th><button data-sort="'+k+'" class="'+(k===state.rank?'on':'')+'">'+v+(k===state.rank?(state.ascending?' ↑':' ↓'):'')+'</button></th>').join("")+'</tr></thead><tbody>'+
-    rows.map(t=>'<tr><td><button data-team="'+escaped(t.id)+'">'+logo(t.id)+escaped(t.name)+'</button></td><td>'+t.wins+'–'+t.losses+'</td>'+Object.keys(metrics()).map(k=>'<td>'+pct(t[k])+'</td>').join("")+'</tr>').join("")+'</tbody></table></div></section>';
+  const compare=rows.some(t=>Number.isFinite(t.firstPrematchAdvance));
+  const change=t=>{
+    if(!Number.isFinite(t.firstPrematchAdvance))return "—";
+    const delta=(t.pAdvance-t.firstPrematchAdvance)*100;
+    return (delta>0?"+":"")+delta.toFixed(2);
+  };
+  const note=compare?modelNote(state.data)+' <button type="button" class="model-evidence" data-model-info>查看校准与回测依据</button>':"点击表头按概率排序，点击队名查看战绩和赛程。";
+  const columns=Object.entries(metrics()).map(([k,v])=>'<th><button data-sort="'+k+'" class="'+(k===state.rank?'on':'')+'">'+v+(k===state.rank?(state.ascending?' ↑':' ↓'):'')+'</button></th>'+
+    (compare&&k==="pAdvance"?'<th>初版晋级率</th><th>变化（百分点）</th>':'')).join("");
+  const row=t=>'<tr><td><button data-team="'+escaped(t.id)+'">'+logo(t.id)+escaped(t.name)+'</button></td><td>'+t.wins+'–'+t.losses+'</td>'+Object.keys(metrics()).map(k=>'<td>'+pct(t[k])+'</td>'+
+    (compare&&k==="pAdvance"?'<td>'+pct(t.firstPrematchAdvance)+'</td><td>'+change(t)+'</td>':'')).join("")+'</tr>';
+  return '<section class="panel">'+heading("队伍概率",'<span class="eyebrow">'+rows.length+' TEAMS</span>')+'<p class="page-note">'+note+'</p><div class="scroll"><table class="teamtable"><thead><tr><th>队伍</th><th>战绩</th>'+columns+'</tr></thead><tbody>'+rows.map(row).join("")+'</tbody></table></div></section>';
 }
 function picks(){
   const d=state.data,p=d.pickem;
@@ -147,9 +168,10 @@ function render(){
   const nav=views.includes(location.hash.slice(1))?location.hash.slice(1):"schedule";
   document.querySelectorAll(".head-inner nav a").forEach(link=>{if(link.hash==="#"+nav)link.setAttribute("aria-current","page");else link.removeAttribute("aria-current");});
   const refs=state.latest?.history||[];
-  el("snapshot").innerHTML='<option value="">最新快照</option>'+refs.filter(x=>x.key!==state.latest.key || x.key===state.selection).slice().reverse().map(x=>'<option value="'+escaped(x.key)+'">'+escaped(x.label)+'</option>').join("");
+  const availableRefs=refs.filter(x=>x.key!==state.latest.key || x.key===state.selection || /^s[234]-prematch-/.test(x.key));
+  el("snapshot").innerHTML='<option value="">最新快照</option>'+availableRefs.slice().reverse().map(x=>'<option value="'+escaped(x.key)+'">'+escaped(x.label)+'</option>').join("");
   el("snapshot").value=state.selection;
-  el("update-time").textContent=(state.selection?"历史快照 ":"模型 ")+stamp(d.asOf);
+  el("update-time").textContent=(state.selection?"历史快照 ":"模型 ")+stamp(d.asOf)+(d.modelLabel?" · "+d.modelLabel:"");
   liveView.indicator();
   const scrolls=new Map();
   if(nav==="simulator"){
@@ -219,6 +241,7 @@ el("snapshot").onchange=e=>{
 };
 el("view").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b)return;
+  if(b.hasAttribute("data-model-info")){info();return;}
   if(b.dataset.team){teamDialog(b.dataset.team);return;}
   if(b.dataset.match){matchDialog(b.dataset.match);return;}
   if(b.dataset.day)state.day=Number(b.dataset.day);
